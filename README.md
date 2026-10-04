@@ -4,6 +4,8 @@
 
 A [DSH (DeepSeek Harness)](https://harness.deepseek.com) client plugin. 中文说明见 [README.zh.md](README.zh.md).
 
+![The Recent sessions panel: one flat list of sessions across every workspace, with workspace chips, last-prompt previews, time grouping and the open-in-a-separate-window button](assets/screenshot-1.jpg)
+
 ---
 
 ## Why this exists

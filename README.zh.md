@@ -4,6 +4,8 @@
 
 这是 [DSH（DeepSeek Harness）](https://harness.deepseek.com) 的客户端插件。English: [README.md](README.md)
 
+![最近会话面板：一张跨所有工作目录的扁平会话列表，带目录 chip、最后一句提问预览、时间分组，以及右上角「在独立窗口打开」](assets/screenshot-1.jpg)
+
 ---
 
 ## 为什么做它
