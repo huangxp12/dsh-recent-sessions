@@ -4,6 +4,14 @@
   "description": "Recent sessions across every workspace in one panel — plus a place to jot a thought now and have it come back when you reopen that conversation.",
   "type": "module",
   "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/huangxp12/dsh-recent-sessions.git"
+  },
+  "homepage": "https://github.com/huangxp12/dsh-recent-sessions#readme",
+  "bugs": {
+    "url": "https://github.com/huangxp12/dsh-recent-sessions/issues"
+  },
   "exports": {
     ".": {
       "default": "./lib/index.js"
