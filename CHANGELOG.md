@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1 — floating pill can no longer land in the top-left corner
+
+- The floating **Recent Sessions** pill is now rendered through a React portal onto `document.body`, and its position is set inline. Previously it was rendered inside the shell overlay layer, so `position: fixed` resolved against the nearest containing block: during the first moments of a cold start (column-width animation, viewport not settled yet) an ancestor could briefly become that containing block, pinning the pill to the window's top-left corner, clipped, until the layout settled. With no intermediate container between the pill and the viewport, that race is gone by construction.
+- Styling still comes from the `.dsh-recent-pill` class; only the positioning is inline, so it no longer depends on when the stylesheet is injected. If `react-dom` is unavailable the pill falls back to rendering in place — the pill is an optional entry point and never affects the panel itself.
+
 ## 0.1.0 — first public release
 
 - **Recent sessions panel** (global panel, not tied to any session): every session across every workspace, newest first, including sessions the sidebar is currently hiding (collapsed workspaces, unregistered directories).
