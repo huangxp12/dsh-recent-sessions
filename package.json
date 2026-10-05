@@ -1,6 +1,6 @@
 {
   "name": "dsh-recent-sessions",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Recent sessions across every workspace in one panel — plus a place to jot a thought now and have it come back when you reopen that conversation.",
   "type": "module",
   "main": "lib/index.js",
@@ -26,8 +26,7 @@
     "lib/client.js",
     "cordis.patch.yml",
     "README.md",
-    "README.zh.md",
-    "README.zh-CN.md",
+    "README.en.md",
     "CHANGELOG.md",
     "LICENSE"
   ],

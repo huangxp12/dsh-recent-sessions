@@ -1,93 +1,93 @@
-# dsh-recent-sessions
+# dsh-recent-sessions（最近会话）
 
-**Every session you have been working in, across every workspace, in one panel — plus a place to jot down a thought and have it come back to you when you reopen that conversation.**
+**把你在所有工作目录里用过的会话，拉平成一块跨目录的列表——外加一个"先记下来，回头它会自己回来找你"的地方。**
 
-A [DSH (DeepSeek Harness)](https://harness.deepseek.com) client plugin. 中文说明见 [README.zh.md](README.zh.md).
+这是 [DSH（DeepSeek Harness）](https://harness.deepseek.com) 的客户端插件。English: [README.en.md](README.en.md)
 
-![The Recent sessions panel: one flat list of sessions across every workspace, with workspace chips, last-prompt previews, time grouping and the open-in-a-separate-window button](assets/screenshot-1.jpg)
+![最近会话面板：一张跨所有工作目录的扁平会话列表，带目录 chip、最后一句提问预览、时间分组，以及右上角「在独立窗口打开」](assets/screenshot-1.jpg)
 
 ---
 
-## Why this exists
+## 为什么做它
 
-DSH's sidebar groups sessions by workspace, shows the newest few rows per workspace, and only lists workspaces you registered. Once you work in a dozen directories at once, a project you have not touched for a while is simply **not on screen** — and a session that lives in a directory you were not looking for is effectively lost.
+DSH 的侧栏**按工作目录分组**会话：每个目录只显示最近几条、只列你注册过的目录。可当你同时在十几个文件夹里干活时，**一阵子没碰的项目就是不在屏幕上**；而一个"住在你没想到的那个目录里"的会话，等于丢了。
 
-There is a second, quieter problem: the thought you have about an answer **twenty minutes later**, while doing something else, has nowhere to go. You either remember it or you lose it.
+还有第二个更安静的问题：**二十分钟后**你才冒出来的那个想法，没有地方可去——要么记住，要么忘掉。
 
-This plugin adds a **global panel** that is not tied to any session — one flat list of every session across every workspace — and a way to capture a deferred thought without waking anything up.
+这个插件加了一块**不跟会话走的全局面板**：一张跨所有工作目录的扁平会话列表；以及一个不用唤醒任何东西就能接住"迟到的想法"的地方。
 
-## What you get
+## 有什么
 
-- **One flat list across all workspaces.** Every session, newest first, including sessions the sidebar is currently hiding (collapsed workspaces, unregistered directories). Each row carries its workspace as a **clickable chip** — click it to filter to that workspace, click the chip in the toolbar to clear.
-- **"What was I asking?"** — a second line per row with that session's last human prompt, read from the host's `turnOutline` session projection. Hover it to see a preview of the last assistant reply.
-- **Time grouping and two sort orders** — Today / Yesterday / This week / Earlier; sort by **most recent** or by **least recently touched** (for cleanup — the time buckets flip as well).
-- **Filters** — only unfinished / include blank sessions / include subagent sessions; archived sessions stay hidden by default. Your view state is remembered locally.
-- **Find it again** — full-text search over message content (host index), instant local title/path filtering, and per-row actions: open the session, **reveal its folder in your file manager**, copy the path.
-- **Deferred thoughts.** Jot one line on any row. It is stored locally and nothing is sent. When you open that session, a **one-line strip** appears above the composer: expand it to **insert the text into your draft** (an official, undoable editor insertion), say *not now* (the thought stays, it just stops nagging), or discard.
-- **A separate window.** Open the panel in its own same-origin window; it selects itself on load.
-- **Quiet by design.** No notifications, no red badges, no auto-archiving. "Long untouched" is expressed by grouping, not by alarm.
+- **跨目录一张表**：所有会话、最近的在最上面，**包括侧栏此刻正藏着的那些**（被折叠的工作区、没注册过的目录）。每行右侧是它的目录 chip——**点一下就只看这个目录**，工具条上出现筛选胶囊，再点取消。
+- **「最后一句我在问什么」**：每行第二行显示该会话最后一条人类提问（读宿主 `turnOutline` 会话投影）；鼠标悬停还能看到最后一条助手回复的预览。
+- **时间分组 + 两种排序**：今天 / 昨天 / 本周 / 更早；可按**最近活动**或**最久没动**排序（后者是给清理用的，时间桶会一起倒过来）。
+- **过滤**：仅未收尾 / 含空会话 / 含子会话；已归档默认隐藏。视图状态记在本机，刷新后保持。
+- **找得回来**：搜索框会查宿主的**消息内容索引**（全文），同时本地按标题/路径即时过滤；行级动作有打开会话、**在文件管理器中显示目录**、复制路径。
+- **迟到的想法**：在任意一行写一句话，**只存本机、什么都不发送**。下次你打开那个会话时，输入框上方会出现**一行小条**：展开可以把这句话**填进草稿**（官方插入 API，可撤销）、可以「先不打扰」（想法留着，只是不再烦你）、也可以丢弃。
+- **独立窗口**：能把面板单独开在自己的同源窗口里，打开时自动切到它。
+- **刻意不吵**：没有通知、没有红色告警、不自动归档，"很久没动"只用分组位置表达。
 
-## Install
+## 安装
 
-From the plugin market inside DSH, or:
+在 DSH 内的插件市场里安装，或者：
 
 ```bash
-dsh plugin --profile <your-profile> add dsh-recent-sessions
+dsh plugin --profile <你的 profile> add dsh-recent-sessions
 ```
 
-## How it works
+## 实现方式
 
-Everything goes through **documented extension points** — no DOM hacks, no monkey-patching:
+全部走**有文档的扩展点**，没有 DOM hack、没有猴子补丁：
 
-| What | Where |
+| 东西 | 座位 / 接口 |
 |---|---|
-| Global panel | `main` keyed slot, key `recent-sessions` |
-| Sidebar entry | `sidebar.panellist` (its `id` must equal the panel key) |
-| Floating entry | `shell.overlay` (the layer is click-through; only the pill takes pointer events) |
-| Thought strip | `conversation.input.dock` (session scope) |
-| Draft insertion | `InputActions.captureInsertion()` + `insertText(text, span)` |
-| Session list | root hooks `useSessions` / `useSessionStatus` / `useWorkspaces` |
-| Prompt previews | `ctx.sessions.refreshProjections(id)` → the `turnOutline` projection |
-| Content search | `ctx.sessions.search(query, signal)` |
-| Reveal folder | `ctx.remote.session.canOpenWorkspacePath()` / `openWorkspacePath({ path, action: "reveal" })` |
+| 全局面板 | `main` keyed slot，key = `recent-sessions` |
+| 侧栏入口 | `sidebar.panellist`（`id` 必须等于面板 key） |
+| 悬浮入口 | `shell.overlay`（该层点击穿透，只有胶囊自己接收点击） |
+| 待问小条 | `conversation.input.dock`（session 作用域） |
+| 填入草稿 | `InputActions.captureInsertion()` + `insertText(text, span)` |
+| 会话列表 | root hooks `useSessions` / `useSessionStatus` / `useWorkspaces` |
+| 提问预览 | `ctx.sessions.refreshProjections(id)` → `turnOutline` 投影 |
+| 内容检索 | `ctx.sessions.search(query, signal)` |
+| 显示目录 | `ctx.remote.session.canOpenWorkspacePath()` / `openWorkspacePath({ path, action: "reveal" })` |
 
-## Privacy and footprint
+## 隐私与体积
 
-- **The host half does nothing at all** (empty `apply`): no tools, no HTTP routes, no session events. The plugin never writes to your conversations.
-- Notes, thoughts and view state live in your browser's `localStorage` only, under the key `dsh-recent-sessions:store:v1`.
-- The only write path is one you trigger yourself: inserting a thought into a draft, and the message you then choose to send.
-- **No build step.** `lib/client.js` is a hand-written bundle in the platform's own module format (`window.__ModuleLoader__.load({ id, factory })`), so the published tarball is two small JS files and nothing else runs at install time.
+- **宿主半什么都不做**（空 `apply`）：不注册工具、不注册路由、不追加任何会话事件——**对会话数据零写入**。
+- 备注、想法、视图状态只存在你浏览器的 `localStorage`（键 `dsh-recent-sessions:store:v1`）。
+- 唯一的写入路径是你自己触发的：把想法填进草稿，以及你随后选择发送的那条消息。
+- **没有构建步骤**：`lib/client.js` 是手写的、平台自己的模块格式（`window.__ModuleLoader__.load({ id, factory })`）。发布包里只有两个小 JS 文件，安装时不执行任何构建。
 
-## Compatibility
+## 兼容性
 
-- DSH `>= 0.2.0-rc.2`, declared in `engines.dsh`.
-- No `@deepseek-ai/dsh-*` peer requirements are declared **on purpose**: a mismatched DSH peer range blocks activation, so the requirement stays advisory instead of becoming a hard gate.
-- Node `^22.19.0 || >=24.0.0` for the host half.
+- DSH `>= 0.2.0-rc.2`（写在 `engines.dsh` 里）。
+- **刻意不声明 `@deepseek-ai/dsh-*` peer 依赖**：peer 范围不匹配会直接阻止插件激活，所以这里只保留"建议"而非硬门槛。
+- 宿主半要求 Node `^22.19.0 || >=24.0.0`。
 
-## Known limitations
+## 已知限制
 
-- The separate window still boots the whole DSH shell (it only switches to this panel). A chrome-less compact window is planned.
-- Prompt previews are fetched for the first 30 rows only.
-- Bundled UI strings are Chinese and English; more locales are welcome.
-- *Reveal in file manager* depends on the host reporting a desktop; the button is hidden when it does not, and falls back to copying the path.
+- 独立窗口仍会加载完整的 DSH 外壳（只是自动切到本面板）；"只有列表的精简小窗"在计划中。
+- 提问预览只为**前 30 行**拉取。
+- 界面文案内置中英两套，欢迎补充其它语言。
+- 「在文件管理器中显示」依赖宿主报告有桌面能力；没有时按钮不出现，并退化为复制路径。
 
-## Development
+## 开发
 
-The client half is discovered from `exports["./client"]` and served by the platform's module loader:
+客户端半由平台模块加载器发现并加载：
 
 ```js
 window.__ModuleLoader__.load({
   id: "dsh-recent-sessions",
   factory: (require) => {
-    const React = require("react"); // ← the shell's PLATFORM_MODULES baseline
+    const React = require("react"); // ← 外壳的 PLATFORM_MODULES 基座
     // ...
-    return module.exports;          // ← needs apply / inject
+    return module.exports;          // ← 需要 apply / inject
   },
 });
 ```
 
-Editing `lib/client.js` is picked up by a running browser within about a second (client HMR polls bundle revisions). Editing `lib/index.js` or changing the package version needs an app restart.
+改 `lib/client.js` 后，运行中的浏览器约 1 秒内自动热替换（客户端 HMR 轮询 bundle revision）；改 `lib/index.js` 或改包版本需要重启应用。
 
-## License
+## 许可
 
 MIT

@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.1.2 — the panel can no longer lose its stylesheet, and the README leads in Chinese
+
+- **Fixed: the panel could come back stripped of all styling** — default grey buttons, default checkboxes, default font — while still rendering every row correctly.
+
+  The stylesheet was injected exactly once, from the plugin's `apply()`. `document.head` is not ours to keep: the shell injects its own `<style>`/`<script>` rows into it at boot, a plugin can be disabled and re-enabled, and hot-reload disposes effects in an order we do not control. Any of those can drop our `<style>` — and since `apply()` never runs a second time, the panel kept rendering the markup with no CSS behind it, permanently.
+
+  Now every render of the panel, the thought strip and the floating pill calls an idempotent `ensureStyles()` that re-appends the stylesheet when it is missing (and rewrites it if the id exists with unexpected content). There is no longer a reachable state where the panel is mounted without its styles.
+
+- **The README now leads in Chinese.** `README.md` is the Chinese documentation and `README.en.md` is the English one. The plugin market fetches `README.md` from the repository root by a hardcoded path, so this makes Chinese the default text on the storefront card and detail page, with the English version one click away at the top of the file.
+
 ## 0.1.1 — floating pill can no longer land in the top-left corner
 
 - The floating **Recent Sessions** pill is now rendered through a React portal onto `document.body`, and its position is set inline. Previously it was rendered inside the shell overlay layer, so `position: fixed` resolved against the nearest containing block: during the first moments of a cold start (column-width animation, viewport not settled yet) an ancestor could briefly become that containing block, pinning the pill to the window's top-left corner, clipped, until the layout settled. With no intermediate container between the pill and the viewport, that race is gone by construction.
