@@ -1,5 +1,7 @@
 # dsh-recent-sessions（最近会话）
 
+[![Listed on dsh-plugin.org](https://dsh-plugin.org/badges/listed.svg)](https://dsh-plugin.org/plugins/kylinq01/dsh-startup-animation)
+
 **把你在所有工作目录里用过的会话，拉平成一块跨目录的列表——外加一个"先记下来，回头它会自己回来找你"的地方。**
 
 这是 [DSH（DeepSeek Harness）](https://harness.deepseek.com) 的客户端插件。English: [README.en.md](README.en.md)
